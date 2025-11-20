@@ -1,48 +1,49 @@
 """
-Database Schemas
+Database Schemas for Office Fitout Website
 
-Define your MongoDB collection schemas here using Pydantic models.
-These schemas are used for data validation in your application.
-
-Each Pydantic model represents a collection in your database.
-Model name is converted to lowercase for the collection name:
-- User -> "user" collection
-- Product -> "product" collection
-- BlogPost -> "blogs" collection
+Each Pydantic model represents a MongoDB collection. Collection name is the
+lowercase of the class name (e.g., Inquiry -> "inquiry").
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional, Literal
 
-# Example schemas (replace with your own):
-
-class User(BaseModel):
+class Inquiry(BaseModel):
     """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
+    Lead capture for website enquiries
+    Collection: "inquiry"
     """
-    name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
+    name: str = Field(..., description="Full name of the person enquiring")
+    email: EmailStr = Field(..., description="Contact email address")
+    phone: Optional[str] = Field(None, description="Phone number")
+    company: Optional[str] = Field(None, description="Company name")
+    service: Optional[str] = Field(None, description="Service of interest (e.g., Office Fitout, Design, Refurbishment)")
+    budget: Optional[str] = Field(None, description="Approximate budget range")
+    timeframe: Optional[str] = Field(None, description="Desired timeline")
+    message: Optional[str] = Field(None, description="Additional details about the project")
+    source: Optional[str] = Field(None, description="Lead source or campaign tag")
+    page: Optional[str] = Field(None, description="Page URL where the form was submitted")
+    consent_marketing: Optional[bool] = Field(False, description="Whether the user consents to marketing communications")
 
-class Product(BaseModel):
+class Testimonial(BaseModel):
     """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
+    Client testimonials
+    Collection: "testimonial"
     """
-    title: str = Field(..., description="Product title")
-    description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
+    client_name: str
+    company: Optional[str] = None
+    role: Optional[str] = None
+    quote: str
+    rating: Optional[int] = Field(None, ge=1, le=5)
 
-# Add your own schemas here:
-# --------------------------------------------------
-
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Project(BaseModel):
+    """
+    Past project highlights
+    Collection: "project"
+    """
+    title: str
+    location: Optional[str] = None
+    sector: Optional[str] = None
+    cover_image_url: Optional[str] = None
+    description: Optional[str] = None
+    slug: Optional[str] = None
